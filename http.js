@@ -13,7 +13,7 @@ global.DEBUG = true;
 
 const httpServer = http.createServer((request, response) => {
   if (DEBUG) console.log("Request URL: ", request.url);
-  let path = "./";
+  let path = "./views/";
   switch (request.url) {
     case "/":
       path += "./index.html";
@@ -59,5 +59,5 @@ const httpServer = http.createServer((request, response) => {
 });
 
 httpServer.listen(3000, () => {
-  console.log('Server is running');
+  console.log('Server is running on local host 3000');
 })
