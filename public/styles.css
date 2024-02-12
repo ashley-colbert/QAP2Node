@@ -1,0 +1,14 @@
+body {
+  background-color: rgb(26, 46, 46);
+}
+
+nav {
+  margin-top: 20px;
+}
+
+p {
+  border-color: white;
+  border-style: solid;
+  border-width: 0 0 0 3pt;
+  padding: 10px;
+}

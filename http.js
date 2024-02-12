@@ -13,42 +13,48 @@ global.DEBUG = true;
 
 const httpServer = http.createServer((request, response) => {
   if (DEBUG) console.log("Request URL: ", request.url);
-  let path = "./views/";
+  let filePath = "./views/";
   switch (request.url) {
-    case "/":
-      path += "./index.html";
+    case "/styles.css":
+      filePath += "../public/styles.css";
       myEmitter.emit("route", path);
-      routes.home(path, response);
+      routes.css(filePath, response);
+      console.log('CSS file accessed')
+      break;
+    case "/":
+      filePath += "./index.html";
+      myEmitter.emit("route", path);
+      routes.home(filePath, response);
       console.log('Home page displayed')
       break;
     case "/about":
-      path += "./about.html";
+      filePath += "./about.html";
       myEmitter.emit("route", path);
-      routes.about(path, response);
+      routes.about(filePath, response);
       console.log('About page displayed')
       break;
     case "/ourTeam":
-      path += "./ourTeam.html";
+      filePath += "./ourTeam.html";
       myEmitter.emit("route", path);
-      routes.ourTeam(path, response);
+      routes.ourTeam(filePath, response);
       console.log('Our team page displayed')
       break;
     case "/moreInfo":
-      path += "./moreInfo.html";
+      filePath += "./moreInfo.html";
       myEmitter.emit("route", path);
-      routes.moreInfo(path, response);
+      routes.moreInfo(filePath, response);
       console.log('More information page displayed')
       break;
     case "/services":
-      path += "./services.html";
+      filePath += "./services.html";
       myEmitter.emit("route", path);
-      routes.services(path, response);
+      routes.services(filePath, response);
       console.log('Services page displayed')
       break;
     case "/contactUs":
-      path += "./contactUs.html";
+      filePath += "./contactUs.html";
       myEmitter.emit("route", path);
-      routes.contactUs(path, response);
+      routes.contactUs(filePath, response);
       console.log('Contact page displayed');
       break;
     default:
