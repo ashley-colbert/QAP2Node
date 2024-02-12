@@ -27,6 +27,20 @@ function contactUs(path, response) {
   fetch (path, response)
 }
 
+
+function css(path, response) {
+  fs.readFile(path, function(error, content) {
+    if(error) {
+      console.log("Error reading CSS")
+      response.writeHead(500, {'Content-Type': 'text/plain'});
+      response.end('500 Internal Server Error');
+    } else {
+      response.writeHead(200, {'Content-Type': 'text/css'});
+      response.end(content, 'utf-8');
+    }
+  });
+}
+
 function fetch(file, response) {
   fs.readFile(file, (error, content) => {
     if(error) {
@@ -39,11 +53,13 @@ function fetch(file, response) {
     }
   });
 }
+
   module.exports = {
     home,
     about,
     ourTeam,
     moreInfo,
     contactUs,
-    services
+    services,
+    css
   }
