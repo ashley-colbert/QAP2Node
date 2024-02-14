@@ -2,16 +2,24 @@
 // Written on February 14, 2024
 
 const http = require("http");
-const path = require("path");
-const fs = require("fs");
+// const path = require("path");
+// const fs = require("fs");
 const routes = require("./route.js");
-const news = require('gnews');
 const winston = require('winston');
 
 //Event emitter created
 const EventEmitter = require("events");
 class MyEmitter extends EventEmitter {}
 const myEmitter = new MyEmitter();
+
+global.DEBUG = true;
+
+//MyEmitter created to print to the console and combined.log file everytime a page is accessed.
+myEmitter.on('route', (url, page, code, error) => {
+  const date = new Date();
+  if(DEBUG) console.log(`${page} page located at ${url} visited, status code ${code} at ${date}`);
+  logger.info(`${page} page located at ${url} visited`);
+});
 
 //NPM package winston installed to handle error and info logging.
 const logger = winston.createLogger({
@@ -28,76 +36,46 @@ const logger = winston.createLogger({
   ],
 });
 
-global.DEBUG = true;
 
+//server created with several routes linked to 6 html pages, located in the views subfolder.
 const httpServer = http.createServer(async (request, response) => {
   if (DEBUG) console.log("Request URL: ", request.url);
   let filePath = "./views/";
   switch (request.url) {
     case "/":
-      try {
-        const search = await news.search('Busniess in Newfoundland', {n : 5});
-        let htmlNews = '<h3>Today\'s Top Business Headlines in Newfoundland and Labrador</h3><ul>';
-          search.forEach(article => {
-            htmlNews += `<li> <a href="${article.url}">${article.title}</a></li>`;
-          });
-        
-        filePath = path.join(filePath, "index.html");
-        fs.readFile(filePath, 'utf8', (err, html) => {
-          if(err) {
-            logger.error('Error reading index.html');
-            response.writeHead(500);
-            return response.end('Error loading page');
-          }
-          const insertHtml = html.replace ('place news here', htmlNews)
-            response.writeHead(200, {'Content-Type': 'text/html'});
-            response.end(insertHtml); });
-      } catch (error) {
-        logger.error('Error fetching news')
-        response.writeHead(500, { 'Content-Type': 'text/plain' });
-        response.end("An error occurred, unable to fetch news articles.");
-      }
+      filePath += "./index.html";
+      myEmitter.emit("route", filePath, 'Home', 200);
+      routes.about(filePath, response);
       break;
     case "/about":
       filePath += "./about.html";
-      myEmitter.emit("route", path);
+      myEmitter.emit("route", filePath, 'About');
       routes.about(filePath, response);
-      console.log('About page displayed')
-      logger.info('About page displayed')
       break;
     case "/ourTeam":
       filePath += "./ourTeam.html";
-      myEmitter.emit("route", path);
+      myEmitter.emit("route", filePath, 'Our Team');
       routes.ourTeam(filePath, response);
-      console.log('Our team page displayed')
-      logger.info('Our team page displayed')
       break;
     case "/moreInfo":
       filePath += "./moreInfo.html";
-      myEmitter.emit("route", path);
+      myEmitter.emit("route", filePath, 'More Information');
       routes.moreInfo(filePath, response);
-      console.log('More information page displayed')
-      logger.info('More information page displayed')
       break;
     case "/services":
       filePath += "./services.html";
-      myEmitter.emit("route", path);
+      myEmitter.emit("route", filePath, 'Services');
       routes.services(filePath, response);
-      console.log('Services page displayed')
-      logger.info('Services page displayed')
       break;
     case "/contactUs":
       filePath += "./contactUs.html";
-      myEmitter.emit("route", path);
+      myEmitter.emit("route", filePath, 'Contact Us');
       routes.contactUs(filePath, response);
-      console.log('Contact page displayed');
-      logger.info('Contact Us page started')
       break;
+//styles.css added as a route, each html page can now access the style sheet from the public folder.
     case "/styles.css":
       filePath += "../public/styles.css";
-      myEmitter.emit("route", path);
       routes.css(filePath, response);
-      console.log('CSS file accessed')
       break;
     default:
       if(DEBUG) console.log('404 Page Not Found');
