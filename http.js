@@ -14,10 +14,10 @@ const myEmitter = new MyEmitter();
 
 global.DEBUG = true;
 
-//MyEmitter created to print to the console and combined.log file everytime a page is accessed.
-myEmitter.on('route', (url, page, code, error) => {
+//MyEmitter created to print events to the console and log events to combined.log file everytime a page is accessed.
+myEmitter.on('route', (url, page) => {
   const date = new Date();
-  if(DEBUG) console.log(`${page} page located at ${url} visited, status code ${code} at ${date}`);
+  if(DEBUG) console.log(`${page} page located at ${url} visited on ${date}`);
   logger.info(`${page} page located at ${url} visited`);
 });
 
@@ -36,15 +36,18 @@ const logger = winston.createLogger({
   ],
 });
 
-
-//server created with several routes linked to 6 html pages, located in the views subfolder.
+//server created with several routes(from route.js) linked to 6 html pages, located in the views subfolder.
 const httpServer = http.createServer(async (request, response) => {
   if (DEBUG) console.log("Request URL: ", request.url);
+  //the files for each route are located in the views subfolder
   let filePath = "./views/";
   switch (request.url) {
+    
     case "/":
+      //the home page will use the index.html file
       filePath += "./index.html";
-      myEmitter.emit("route", filePath, 'Home', 200);
+      //the myEmitter will emit an event(it will be printed to the console, and logged to the combined.log folder)
+      myEmitter.emit("route", filePath, 'Home');
       routes.about(filePath, response);
       break;
     case "/about":
@@ -79,11 +82,13 @@ const httpServer = http.createServer(async (request, response) => {
       break;
     default:
       if(DEBUG) console.log('404 Page Not Found');
+      //error logs will be sent to the error.log file.
       logger.error('404 Page Not Found')
       response.writeHead(404, { 'Content-Type': 'text/plain'});
       response.end('404 Page Not Found');
     }
   });
+  //this will start the server on localhost:3000 and print the event to the console.
 httpServer.listen(3000, () => {
   console.log('Server is running on local host 3000');
   logger.info('Server started')
