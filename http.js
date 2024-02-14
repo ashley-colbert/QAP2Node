@@ -93,4 +93,3 @@ httpServer.listen(3000, () => {
   console.log('Server is running on local host 3000');
   logger.info('Server started')
 })
-
